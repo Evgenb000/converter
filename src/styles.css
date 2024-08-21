@@ -1,1 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn {
+  @apply text-center text-cust__white px-4 py-3 w-28 cursor-pointer bg-cust__slate hover:bg-cust__slate-light hover:shadow-md duration-300 transition rounded-md;
+}
