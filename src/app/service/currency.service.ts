@@ -1,13 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {
-  BehaviorSubject,
-  Observable,
-  catchError,
-  combineLatest,
-  map,
-  of,
-} from 'rxjs';
+import { Observable, catchError, map, of } from 'rxjs';
 import { Currency } from '../model/currency.model';
 
 @Injectable({
@@ -21,22 +14,28 @@ export class CurrencyService {
   constructor(private http: HttpClient) {}
 
   getCurrencies(): Observable<Currency[]> {
+    if (this.currencies.length > 0) {
+      return of(this.currencies);
+    }
+
     return this.http.get<any>(this.apiUrl).pipe(
-      map((response) => {
-        const data = response.uah;
-        if (data) {
-          return Object.keys(data).map((key) => ({
-            code: key.toUpperCase(),
-            rate: data[key],
-          }));
-        } else {
-          return [];
-        }
-      }),
+      map((response) => this.transformCurrencyData(response)),
       catchError((error) => {
         console.error('Error when receiving currency:', error);
         return of([]);
       })
     );
+  }
+
+  private transformCurrencyData(response: any): Currency[] {
+    const data = response.uah;
+    if (data) {
+      this.currencies = Object.keys(data).map((key) => ({
+        code: key.toUpperCase(),
+        rate: data[key],
+      }));
+      return this.currencies;
+    }
+    return [];
   }
 }
