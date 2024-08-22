@@ -1,52 +1,59 @@
-<!-- <div *ngFor="let currency of currencies">
-  <div>{{ currency.code }} - {{ currency.rate }}</div>
-</div> -->
-
 <section
   class="flex justify-center items-center border rounded-md bg-cust__black w-[600px] h-[240px]"
 >
   <div class="flex p-2">
-    <mat-form-field class="rounded-none w-20 px-1">
+    <mat-form-field class="rounded-none w-24 px-1">
       <mat-label>Amount</mat-label>
-      <input matInput value="1" />
+      <input matInput type="number" [formControl]="amountControl1" />
     </mat-form-field>
 
-    <mat-form-field class="rounded-none w-24">
+    <mat-form-field class="rounded-none w-32">
       <mat-label>Currency</mat-label>
       <input
         type="text"
+        aria-label="Currency"
         matInput
-        formControl="currencyControl"
-        [matAutocomplete]="auto"
+        [formControl]="currencyControl1"
+        [matAutocomplete]="auto1"
       />
-      <mat-autocomplete #auto="matAutocomplete">
+      <mat-autocomplete autoActiveFirstOption #auto1="matAutocomplete">
         <mat-option
-          *ngFor="let currency of filteredCurrencies | async"
+          *ngFor="let currency of filteredCurrencies1 | async"
           [value]="currency"
         >
-          {{ currency }}
+          {{ currency.toUpperCase() }}
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>
   </div>
-  <div>
+
+  <div class="-translate-y-2" (click)="swapCurrencies()">
     <img src="assets/arrows.png" alt="swap" width="32px" height="32px" />
   </div>
-  <mat-form-field class="p-2">
-    <mat-label>Choose currency</mat-label>
-    <input
-      type="text"
-      matInput
-      formControl="currencyControl"
-      [matAutocomplete]="auto"
-    />
-    <mat-autocomplete #auto="matAutocomplete">
-      <mat-option
-        *ngFor="let currency of filteredCurrencies | async"
-        [value]="currency"
-      >
-        {{ currency }}
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
+
+  <div class="flex p-2">
+    <mat-form-field class="rounded-none w-24 px-1">
+      <mat-label>Amount</mat-label>
+      <input matInput type="number" [formControl]="amountControl2" readonly />
+    </mat-form-field>
+
+    <mat-form-field class="rounded-none w-32">
+      <mat-label>Currency</mat-label>
+      <input
+        type="text"
+        aria-label="Currency"
+        matInput
+        [formControl]="currencyControl2"
+        [matAutocomplete]="auto2"
+      />
+      <mat-autocomplete autoActiveFirstOption #auto2="matAutocomplete">
+        <mat-option
+          *ngFor="let currency of filteredCurrencies2 | async"
+          [value]="currency"
+        >
+          {{ currency.toUpperCase() }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
 </section>

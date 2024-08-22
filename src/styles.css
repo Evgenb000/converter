@@ -2,15 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-.btn {
-  @apply text-center text-cust__white px-4 py-3 w-32 cursor-pointer bg-cust__gray hover:bg-cust__cyan-dark hover:shadow-md duration-300 transition rounded-md;
-}
-
 html,
 body {
   height: 100%;
 }
+
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.btn {
+  @apply text-center text-cust__white px-4 py-3 w-32 cursor-pointer bg-cust__gray hover:bg-cust__cyan-dark hover:shadow-md duration-300 transition rounded-md;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Убираем стрелки в поле ввода чисел для Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

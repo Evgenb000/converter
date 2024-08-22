@@ -27,19 +27,19 @@ export class HeaderComponent implements OnInit {
         if (usdRate) {
           this.uahToUsd = `1 USD = ${(1 / usdRate).toFixed(2)} UAH`;
         } else {
-          this.uahToUsd = 'Курсы валют не доступны';
+          this.uahToUsd = 'Exchange rates not available';
         }
 
         if (eurRate) {
           this.uahToEur = `1 EUR = ${(1 / eurRate).toFixed(2)} UAH`;
         } else {
-          this.uahToEur = 'Курсы валют не доступны';
+          this.uahToEur = 'Exchange rates not available';
         }
       },
       (error) => {
-        console.error('Ошибка при получении валют:', error);
-        this.uahToEur = 'Ошибка при загрузке данных';
-        this.uahToUsd = 'Ошибка при загрузке данных';
+        console.error('Error when receiving currencies:', error);
+        this.uahToEur = 'Error loading data';
+        this.uahToUsd = 'Error loading data';
       }
     );
   }

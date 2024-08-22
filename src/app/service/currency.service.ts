@@ -26,7 +26,7 @@ export class CurrencyService {
         const data = response.uah;
         if (data) {
           return Object.keys(data).map((key) => ({
-            code: key,
+            code: key.toUpperCase(),
             rate: data[key],
           }));
         } else {
@@ -34,7 +34,7 @@ export class CurrencyService {
         }
       }),
       catchError((error) => {
-        console.error('Ошибка при получении валют:', error);
+        console.error('Error when receiving currency:', error);
         return of([]);
       })
     );
