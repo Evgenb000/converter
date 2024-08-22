@@ -9,10 +9,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { UppercaseDirective } from '../../directives/upperCase.directive';
 
 @Component({
   selector: 'app-converter',
   templateUrl: './converter.component.html',
+
   imports: [
     NgFor,
     MatAutocompleteModule,
@@ -20,6 +22,7 @@ import { map, startWith } from 'rxjs/operators';
     MatInputModule,
     MatFormFieldModule,
     CommonModule,
+    UppercaseDirective,
   ],
   standalone: true,
 })
@@ -65,36 +68,36 @@ export class ConverterComponent implements OnInit {
   }
 
   private _filter(value: string): string[] {
-    const filterValue = value;
+    const filterValue = value.toUpperCase(); // Преобразование значения фильтра в верхний регистр
     return this.currencies
-      .map((currency) => currency.code)
+      .map((currency) => currency.code.toUpperCase()) // Преобразование всех кодов валют в верхний регистр
       .filter((code) => code.includes(filterValue));
   }
 
   private updateAmount2(): void {
     const amount1 = this.amountControl1.value;
+    const currencyUpperCase1 = this.currencyControl1.value?.toUpperCase();
+    const currencyUpperCase2 = this.currencyControl2.value?.toUpperCase();
     const currency1 = this.currencies.find(
-      (currency) => currency.code === this.currencyControl1.value
+      (currency) => currency.code === currencyUpperCase1
     );
     const currency2 = this.currencies.find(
-      (currency) => currency.code === this.currencyControl2.value
+      (currency) => currency.code === currencyUpperCase2
     );
 
     if (currency1 && currency2 && amount1) {
-      if (currency1.code === 'uah') {
+      if (currency1.code === 'UAH') {
         const count = this.currencies.find(
-          (currency) => currency.code === this.currencyControl2.value
+          (currency) =>
+            currency.code === this.currencyControl2.value?.toUpperCase()
         )?.rate;
-        if (count) {
-          this.amountControl2.setValue(count.toFixed(2));
-        }
-      } else if (currency2.code === 'uah') {
+        this.amountControl2.setValue((count! * amount1).toFixed(2));
+      } else if (currency2.code === 'UAH') {
         const count = this.currencies.find(
-          (currency) => currency.code === this.currencyControl1.value
+          (currency) =>
+            currency.code === this.currencyControl1.value?.toUpperCase()
         )?.rate;
-        if (count) {
-          this.amountControl2.setValue((1 / count).toFixed(2));
-        }
+        this.amountControl2.setValue(((1 / count!) * amount1).toFixed(2));
       } else {
         const convertedAmount = (amount1 * currency2.rate) / currency1.rate;
         this.amountControl2.setValue(convertedAmount.toFixed(2));

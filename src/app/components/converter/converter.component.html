@@ -15,13 +15,14 @@
         matInput
         [formControl]="currencyControl1"
         [matAutocomplete]="auto1"
+        appUppercase
       />
       <mat-autocomplete autoActiveFirstOption #auto1="matAutocomplete">
         <mat-option
           *ngFor="let currency of filteredCurrencies1 | async"
           [value]="currency"
         >
-          {{ currency.toUpperCase() }}
+          {{ currency }}
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>
@@ -45,13 +46,14 @@
         matInput
         [formControl]="currencyControl2"
         [matAutocomplete]="auto2"
+        appUppercase
       />
       <mat-autocomplete autoActiveFirstOption #auto2="matAutocomplete">
         <mat-option
           *ngFor="let currency of filteredCurrencies2 | async"
           [value]="currency"
         >
-          {{ currency.toUpperCase() }}
+          {{ currency }}
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>

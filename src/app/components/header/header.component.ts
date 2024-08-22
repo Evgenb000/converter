@@ -22,8 +22,8 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     this.currencyService.getCurrencies().subscribe(
       (data: Currency[]) => {
-        const usdRate = data.find((currency) => currency.code === 'usd')?.rate;
-        const eurRate = data.find((currency) => currency.code === 'eur')?.rate;
+        const usdRate = data.find((currency) => currency.code === 'USD')?.rate;
+        const eurRate = data.find((currency) => currency.code === 'EUR')?.rate;
         if (usdRate) {
           this.uahToUsd = `1 USD = ${(1 / usdRate).toFixed(2)} UAH`;
         } else {
