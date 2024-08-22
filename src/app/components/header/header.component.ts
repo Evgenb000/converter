@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { Currencies } from '../../model/currencies.model';
+import { Currency } from '../../model/currency.model';
 import { CurrencyService } from '../../service/currency.service';
 import { NgIf } from '@angular/common';
 
@@ -20,8 +20,8 @@ export class HeaderComponent implements OnInit {
   constructor(private currencyService: CurrencyService) {}
 
   ngOnInit(): void {
-    this.currencyService.getCurrenciesHeader().subscribe(
-      (data: Currencies[]) => {
+    this.currencyService.getCurrencies().subscribe(
+      (data: Currency[]) => {
         const usdRate = data.find((currency) => currency.code === 'usd')?.rate;
         const eurRate = data.find((currency) => currency.code === 'eur')?.rate;
         if (usdRate) {

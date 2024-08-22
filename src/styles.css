@@ -3,5 +3,14 @@
 @tailwind utilities;
 
 .btn {
-  @apply text-center text-cust__white px-4 py-3 w-28 cursor-pointer bg-cust__slate hover:bg-cust__slate-light hover:shadow-md duration-300 transition rounded-md;
+  @apply text-center text-cust__white px-4 py-3 w-32 cursor-pointer bg-cust__gray hover:bg-cust__cyan-dark hover:shadow-md duration-300 transition rounded-md;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }

@@ -1,16 +1,20 @@
 <header
-  class="flex justify-between items-center container mt-4 bg-cust__slate rounded-md duration-300 transition"
+  class="flex justify-between items-center container p-2 mt-4 bg-cust__black rounded-md duration-300 transition mb-10"
 >
-  <a routerLink="" routerLinkActive="" class="p-2 ml-4">
+  <a
+    routerLink=""
+    routerLinkActive=""
+    class="px-2 ml-4 hover:scale-110 transition-transform duration-300"
+  >
     <img src="/assets/logo.png" alt="logo" height="40" width="40" />
   </a>
-  <div class="px-2">
-    <p *ngIf="uahToEur" class="text-cust__white font-bold">
+  <div class="flex flex-col justify-center px-2 text-center">
+    <span *ngIf="uahToEur" class="text-cust__white font-bold m-0">
       {{ uahToUsd }}
-    </p>
-    <p *ngIf="uahToUsd" class="text-cust__white font-bold">
+    </span>
+    <span *ngIf="uahToUsd" class="text-cust__white font-bold m-0">
       {{ uahToEur }}
-    </p>
+    </span>
   </div>
   <div class="flex gap-2">
     <nav class="mr-4 text-center items-center content-center">
@@ -23,9 +27,7 @@
         >
       </ul>
     </nav>
-    <div
-      class="flex gap-2 border-l border-cust__gray-light w-full rounded-r py-2 pr-2"
-    >
+    <div class="flex gap-2 w-full rounded-r py-2 pr-2">
       <div class="btn ml-6">login</div>
       <div class="btn">reg</div>
     </div>
