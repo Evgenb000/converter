@@ -8,8 +8,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormControl } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { debounceTime, map, startWith, switchMap } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { UppercaseDirective } from '../../directives/upperCase.directive';
+import { CurrencyConverterService } from '../../service/currencyConverter.service';
 
 @Component({
   selector: 'app-converter',
@@ -37,43 +38,52 @@ export class ConverterComponent implements OnInit {
 
   private isInternalUpdate = false;
 
-  constructor(private currencyService: CurrencyService) {}
+  constructor(
+    private currencyService: CurrencyService,
+    private converterService: CurrencyConverterService
+  ) {}
 
   ngOnInit(): void {
     this.currencyService.getCurrencies().subscribe(
       (data) => {
         this.currencies = data;
-
-        this.filteredCurrencies1 = this.currencyControl1.valueChanges.pipe(
-          startWith(''),
-          map((value) => this._filter(value || ''))
-        );
-
-        this.filteredCurrencies2 = this.currencyControl2.valueChanges.pipe(
-          startWith(''),
-          map((value) => this._filter(value || ''))
-        );
-
-        this.amountControl1.valueChanges.subscribe(() =>
-          this.handleAmount1Change()
-        );
-        this.amountControl2.valueChanges.subscribe(() =>
-          this.handleAmount2Change()
-        );
-        this.currencyControl1.valueChanges.subscribe(() =>
-          this.handleCurrency1Change()
-        );
-        this.currencyControl2.valueChanges.subscribe(() =>
-          this.handleCurrency2Change()
-        );
-
+        this.initializeFilters();
         this.updateAmount2();
       },
       (error) => console.error('Error when receiving currency:', error)
     );
+
+    this.subscribeToValueChanges();
   }
 
-  private _filter(value: string): string[] {
+  private initializeFilters(): void {
+    this.filteredCurrencies1 = this.currencyControl1.valueChanges.pipe(
+      startWith(''),
+      map((value) => this.filterCurrencies(value || ''))
+    );
+
+    this.filteredCurrencies2 = this.currencyControl2.valueChanges.pipe(
+      startWith(''),
+      map((value) => this.filterCurrencies(value || ''))
+    );
+  }
+
+  private subscribeToValueChanges(): void {
+    this.amountControl1.valueChanges.subscribe(() =>
+      this.handleAmount1Change()
+    );
+    this.amountControl2.valueChanges.subscribe(() =>
+      this.handleAmount2Change()
+    );
+    this.currencyControl1.valueChanges.subscribe(() =>
+      this.handleCurrency1Change()
+    );
+    this.currencyControl2.valueChanges.subscribe(() =>
+      this.handleCurrency2Change()
+    );
+  }
+
+  private filterCurrencies(value: string): string[] {
     const filterValue = value.toUpperCase();
     return this.currencies
       .map((currency) => currency.code.toUpperCase())
@@ -82,7 +92,6 @@ export class ConverterComponent implements OnInit {
 
   private handleAmount1Change(): void {
     if (this.isInternalUpdate) return;
-
     this.isInternalUpdate = true;
     this.updateAmount2();
     this.isInternalUpdate = false;
@@ -90,7 +99,6 @@ export class ConverterComponent implements OnInit {
 
   private handleAmount2Change(): void {
     if (this.isInternalUpdate) return;
-
     this.isInternalUpdate = true;
     this.updateAmount1();
     this.isInternalUpdate = false;
@@ -98,7 +106,6 @@ export class ConverterComponent implements OnInit {
 
   private handleCurrency1Change(): void {
     if (this.isInternalUpdate) return;
-
     this.isInternalUpdate = true;
     this.updateAmount2();
     this.isInternalUpdate = false;
@@ -106,64 +113,65 @@ export class ConverterComponent implements OnInit {
 
   private handleCurrency2Change(): void {
     if (this.isInternalUpdate) return;
-
     this.isInternalUpdate = true;
     this.updateAmount1();
     this.isInternalUpdate = false;
   }
 
-  private updateAmount1(): void {
-    const amount = this.amountControl2.value;
-    const currencyCode1 = this.currencyControl1.value ?? '';
-    const currencyCode2 = this.currencyControl2.value ?? '';
-    const currency1 = this.getCurrency(currencyCode1);
-    const currency2 = this.getCurrency(currencyCode2);
+  private updateAmount(
+    controlToUpdate: FormControl,
+    amountControl: FormControl,
+    currencyControl1: FormControl,
+    currencyControl2: FormControl
+  ): void {
+    const amount = amountControl.value;
+    const currencyCode1 = currencyControl1.value?.toUpperCase() ?? '';
+    const currencyCode2 = currencyControl2.value?.toUpperCase() ?? '';
+    const currency1 = this.currencies.find(
+      (currency) => currency.code === currencyCode1
+    );
+    const currency2 = this.currencies.find(
+      (currency) => currency.code === currencyCode2
+    );
 
-    if (currency1 && currency2 && amount) {
+    if (currency1 && currency2 && amount != null) {
       let convertedAmount: number;
 
       if (currency1.code === 'UAH') {
-        convertedAmount = amount / (currency2?.rate || 1);
+        const rate = currency2.rate;
+        convertedAmount = rate * amount;
       } else if (currency2.code === 'UAH') {
-        convertedAmount = amount * (currency1?.rate || 1);
+        const rate = currency1.rate;
+        convertedAmount = (1 / rate) * amount;
       } else {
         convertedAmount = (amount * currency2.rate) / currency1.rate;
       }
 
-      this.amountControl1.setValue(Number(convertedAmount.toFixed(2)), {
+      controlToUpdate.setValue(convertedAmount.toFixed(2), {
         emitEvent: false,
       });
     } else {
-      this.amountControl1.setValue(0, { emitEvent: false });
+      controlToUpdate.setValue(null, { emitEvent: false });
     }
+  }
+
+  private updateAmount1(): void {
+    this.updateAmount(
+      this.amountControl1,
+      this.amountControl2,
+      this.currencyControl2,
+      this.currencyControl1
+    );
   }
 
   private updateAmount2(): void {
-    const amount = this.amountControl1.value;
-    const currencyCode1 = this.currencyControl1.value ?? '';
-    const currencyCode2 = this.currencyControl2.value ?? '';
-    const currency1 = this.getCurrency(currencyCode1);
-    const currency2 = this.getCurrency(currencyCode2);
-
-    if (currency1 && currency2 && amount) {
-      let convertedAmount: number;
-
-      if (currency1.code === 'UAH') {
-        convertedAmount = amount * (currency2?.rate || 1);
-      } else if (currency2.code === 'UAH') {
-        convertedAmount = amount / (currency1?.rate || 1);
-      } else {
-        convertedAmount = (amount * currency2.rate) / currency1.rate;
-      }
-
-      this.amountControl2.setValue(Number(convertedAmount.toFixed(2)), {
-        emitEvent: false,
-      });
-    } else {
-      this.amountControl2.setValue(0, { emitEvent: false });
-    }
+    this.updateAmount(
+      this.amountControl2,
+      this.amountControl1,
+      this.currencyControl1,
+      this.currencyControl2
+    );
   }
-
   private getCurrency(code: string): Currency | undefined {
     return this.currencies.find(
       (currency) => currency.code.toUpperCase() === code.toUpperCase()

@@ -13,9 +13,6 @@ import { NgIf } from '@angular/common';
 export class HeaderComponent implements OnInit {
   uahToEur: string | null = null;
   uahToUsd: string | null = null;
-  a = 1;
-  b = 2;
-  c = 3;
 
   constructor(private currencyService: CurrencyService) {}
 
